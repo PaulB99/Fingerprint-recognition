@@ -41,7 +41,6 @@ void straighten(char path[]) {
 
 	fclose(fIn);
 	fclose(fOut);
-	return 0;
 }
 
 void skeleton(char path[]) {
@@ -80,5 +79,4 @@ void skeleton(char path[]) {
 
 	fclose(fIn);
 	fclose(fOut);
-	return 0;
 }
