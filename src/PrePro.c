@@ -7,6 +7,9 @@
 
 void straighten(char path[]) {
 
+    unsigned char byte[54];
+    int i;
+
     // Input file
     FILE *fIn = fopen(path ,"r");
     // Output file				            
@@ -25,6 +28,11 @@ void straighten(char path[]) {
 	}
 	fwrite(byte,sizeof(unsigned char),54,fOut);	
 
+    // extract image height, width and bitDepth from the header 
+	int height = *(int*)&byte[18];
+	int width = *(int*)&byte[22];
+	int bitDepth = *(int*)&byte[28];
+
     // Find size of image and fill a buffer with the image
     int size = height*width;
 	unsigned char buffer[size],out[size];	
@@ -36,6 +44,7 @@ void straighten(char path[]) {
 		out[i] = buffer[i];
 	}
 
+    // ALGORITHM HERE 
     //write image data back to the file
     fwrite(out,sizeof(unsigned char),size,fOut);
 
@@ -43,7 +52,13 @@ void straighten(char path[]) {
 	fclose(fOut);
 }
 
+/** 
+ * Skeletonises fingerprint 
+ */
 void skeleton(char path[]) {
+
+    unsigned char byte[54];
+    int i;
 
     // Input file
     FILE *fIn = fopen(path ,"r");
@@ -63,6 +78,11 @@ void skeleton(char path[]) {
 	}
 	fwrite(byte,sizeof(unsigned char),54,fOut);	
 
+    // extract image height, width and bitDepth from the header 
+	int height = *(int*)&byte[18];
+	int width = *(int*)&byte[22];
+	int bitDepth = *(int*)&byte[28];
+
     // Find size of image and fill a buffer with the image
     int size = height*width;
 	unsigned char buffer[size],out[size];	
@@ -73,6 +93,9 @@ void skeleton(char path[]) {
 	{
 		out[i] = buffer[i];
 	}
+
+    // ALGORITHM HERE
+
 
     //write image data back to the file
     fwrite(out,sizeof(unsigned char),size,fOut);
