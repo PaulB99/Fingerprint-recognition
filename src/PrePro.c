@@ -45,6 +45,7 @@ void straighten(char path[]) {
 	}
 
     // ALGORITHM HERE 
+
     //write image data back to the file
     fwrite(out,sizeof(unsigned char),size,fOut);
 
@@ -53,7 +54,7 @@ void straighten(char path[]) {
 }
 
 /** 
- * Skeletonises fingerprint 
+ * Zhang-Suen skeletonisation algorithm
  */
 void skeleton(char path[]) {
 
@@ -103,3 +104,49 @@ void skeleton(char path[]) {
 	fclose(fIn);
 	fclose(fOut);
 }
+
+/** 
+ * Zhang-Suen skeletonisation algorithm
+ */
+char skeletonise(char img[], int height, int width) {
+    int size = height * weight;
+    int i, j;
+    for(i = 0; i > )
+}
+
+/** 
+ * Returns the neighbours of a cell, from the cell directly above and clockwise around
+ */
+char neighbours(char img[], int height, int width, int pos) {
+    char neigh[8]
+    int i, j;
+    int size = height * width;
+    for (i = -1; i <= 1; i++) {
+        for (j = -1; j <= 1; j++) {
+            if (i == 0 && j == 0) { // Skip central case
+                continue;
+            }
+            else if(pos-i<0 || pos+i>size-1 || pos+(j*width)>size-1 || pos-(j*width)<0) {
+                neigh[findpos(i, j)] = NULL;
+            }
+            else {
+                neigh[findpos(i, j)] = pos + i + (j*width)
+            }
+
+        }
+    } 
+}
+
+/**
+ * An enum to relate the neighbour positions
+ */
+enum findpos {
+    (0, -1) = 1
+    (1, -1) = 2
+    (1, 0) = 3
+    (1, 1) = 4
+    (0, 1) = 5
+    (-1, 1) = 6
+    (-1, 0) = 7
+    (-1, -1) = 8
+};
