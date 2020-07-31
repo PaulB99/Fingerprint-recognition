@@ -169,4 +169,8 @@ char neighbours(char img[], int height, int width, int pos) {
 	return neigh;
 }
 
+int main() {
+	return 0;
+}
+
 
