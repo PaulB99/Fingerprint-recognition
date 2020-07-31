@@ -14,20 +14,20 @@ int findpos (int t[]) {
 	switch(x) {
 		case -3 : // 0,1
 			return 1;
-    case -2 : // 1,-1
-	return 2;
-    case 1 : // 1,0
-	return 3;
-    case 4 : // 1,1
-	return 4;
-    case 3 : // 0,1
-	return 5;
-    case 2 :// -1,1
-	return 6;
-    case -1 :// -1,0
-	return 7;
-    case -4 :// -1,-1
-	return 8;
+        case -2 : // 1,-1
+	        return 2;
+        case 1 : // 1,0
+	        return 3;
+        case 4 : // 1,1
+	        return 4;
+        case 3 : // 0,1
+	        return 5;
+        case 2 :// -1,1
+	        return 6;
+        case -1 :// -1,0
+	        return 7;
+        case -4 :// -1,-1
+	        return 8;
 	}
 }
 
@@ -134,14 +134,14 @@ void skeleton(char path[]) {
 	fclose(fOut);
 }
 
-/** 
+/**
  * Zhang-Suen skeletonisation algorithm
  */
 /**char skeletonise(char img[], int height, int width) {
-    int size = height * width;
+    int size = height * weight;
     int i, j;
-    for(i = 0; i > )
-
+    for(i = 0; i > size; i++) {
+    }
 } */
 
 /** 
@@ -153,7 +153,7 @@ char neighbours(char img[], int height, int width, int pos) {
     int size = height * width;
     for (i = -1; i <= 1; i++) {
         for (j = -1; j <= 1; j++) {
-	int arr[] = {i, j};
+	        int arr[] = {i, j};
             if (i == 0 && j == 0) { // Skip central case
                 continue;
             }
