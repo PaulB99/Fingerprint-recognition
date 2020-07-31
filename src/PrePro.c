@@ -125,7 +125,10 @@ void skeleton(char path[]) {
 	}
 
     // ALGORITHM HERE
-
+	for (i=0; i<size; i++) 
+	{ 
+		printf("%c", out[i];
+	}
 
     //write image data back to the file
     fwrite(out,sizeof(unsigned char),size,fOut);
@@ -170,6 +173,7 @@ char neighbours(char img[], int height, int width, int pos) {
 }
 
 int main() {
+	skeleton("../data/sample.bmp");
 	return 0;
 }
 
