@@ -5,6 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+char blankPixel,imagePixel;
+	char** image;
+
 /**
  * A function to relate the neighbour positions
  */
@@ -34,21 +37,26 @@ int findpos (int t[]) {
 /** 
 * Function to straighten an image
 */
-void straighten(char path[]) {
+void straighten(char* path) {
 
     unsigned char byte[54];
     int i;
+	FILE *fIn;
+	FILE *fOut;
+	unsigned char *buffer;
+	unsigned char *out;
+	
 
     // Input file
-    FILE *fIn = fopen(path ,"r");
+    fIn = fopen(path ,"rb");
     // Output file				            
-	FILE *fOut = fopen("out.bmp","w+");                         
+	fOut = fopen("out.bmp","w+");                         
 
     // Check if the input file has not been opened succesfully
     if(fIn==NULL)												
 	{											
 		printf("File does not exist \n");
-	}
+	}	
 
     // 	Copy over the file header
     for(i=0;i<54;i++)										    
@@ -64,15 +72,14 @@ void straighten(char path[]) {
 
     // Find size of image and fill a buffer with the image
     int size = height*width;
-	unsigned char buffer[size],out[size];	
-    fread(buffer,sizeof(unsigned char),size,fIn);
+buffer = (unsigned char*)malloc(size);	
+    fread(buffer,sizeof(unsigned char) ,size,fIn);
 
     // Copy to out buffer
     for(i=0;i<size;i++)
 	{
 		out[i] = buffer[i];
 	}
-
     // ALGORITHM HERE 
 
     //write image data back to the file
@@ -86,11 +93,11 @@ void straighten(char path[]) {
  * Zhang-Suen skeletonisation algorithm
  */
 void skeleton(char* path) {
-
+	
     // Declare variables
-    int startRow = 1,startCol = 1,endRow,endCol,i,j,count,rows,cols,processed;
+    int i,j,count,rows,cols,processed;
  
-	pixel* markers;
+	//pixel* markers;
 
     // Import file
     FILE* in = fopen(path,"r");
@@ -106,7 +113,7 @@ void skeleton(char* path) {
  
 	for(i=0;i<rows;i++){
 		image[i] = (char*)malloc((cols+1)*sizeof(char));
-		fscanf(in,"%s\n",imageMatrix[i]);
+		fscanf(in,"%s\n",image[i]);
 		printf("\n%s",image[i]);
  
 	}
@@ -149,7 +156,7 @@ char neighbours(char img[], int height, int width, int pos) {
 }
 
 int main() {
-	skeleton("../data/sample.bmp");
+	straighten("../data/sample.bmp");
 	return 0;
 }
 
