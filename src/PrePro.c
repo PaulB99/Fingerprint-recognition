@@ -4,9 +4,21 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "BmpReader.c"
 
 char blankPixel,imagePixel;
-	char** image;
+char** image;
+
+/** 
+ * Main preprocessing function
+ */
+void run(char* fileName) {
+
+	// Load in image
+	BITMAPINFOHEADER bitmapInfoHeader;
+	unsigned char *bitmapData;
+	bitmapData = LoadBitmapFile(fileName,&bitmapInfoHeader);
+}
 
 /**
  * A function to relate the neighbour positions
@@ -156,7 +168,7 @@ char neighbours(char img[], int height, int width, int pos) {
 }
 
 int main() {
-	straighten("../data/sample.bmp");
+	run("../data/sample.bmp");
 	return 0;
 }
 
