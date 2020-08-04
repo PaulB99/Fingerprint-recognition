@@ -36,28 +36,32 @@ int findpos (int t[]) {
 }
 
 
-void run(){
+void run(char* path){
 
-	FILE *fIn = fopen("../data/sample.bmp","r");				//Input File name
-	FILE *fOut = fopen("b_w.bmp","w+");		            //Output File name
+	// Input and output files
+	FILE *fIn = fopen(path,"r");
+	FILE *fOut = fopen("out.bmp","w+");		       
 
 	int i;
-	unsigned char byte[54];								//to get the image header
-	unsigned char colorTable[1024];						//to get the colortable
+	unsigned char byte[54];								
+	unsigned char colourTable[1024];					
 
-	if(fIn==NULL)										// check if the input file has not been opened succesfully.
+	//Check file has been opened
+	if(fIn==NULL)	
 	{										
-		printf("File does not exist.\n");
+		printf("File does not exist\n");
 	}
 
-	for(i=0;i<54;i++)									//read the 54 byte header from fIn
+	//Read header
+	for(i=0;i<54;i++)								
 	{									
 		byte[i]=getc(fIn);								
 	}
 
-	fwrite(byte,sizeof(unsigned char),54,fOut);			//write the header back
+	// Write header
+	fwrite(byte,sizeof(unsigned char),54,fOut);	
 
-	// extract image height, width and bitDepth from imageHeader 
+	// Extract image height, width and bitDepth from imageHeader 
 	int height = *(int*)&byte[18];
 	int width = *(int*)&byte[22];
 	int bitDepth = *(int*)&byte[28];
@@ -65,24 +69,34 @@ void run(){
 	printf("width: %d\n",width);
 	printf("height: %d\n",height );
 
-	int size=height*width;								//calculate image size
+	int size=height*width;							
 
-	if(bitDepth<=8)										//if ColorTable present, extract it.
+	/** 
+	 * 
+	 * BINARISE IMAGE
+	 * Uses THRESHOLD to determine black/white
+	 * 
+	 */
+	// Extract colour table
+	if(bitDepth<=8)										
 	{
-		fread(colorTable,sizeof(unsigned char),1024,fIn);
-		fwrite(colorTable,sizeof(unsigned char),1024,fOut);
+		fread(colourTable,sizeof(unsigned char),1024,fIn);
+		fwrite(colourTable,sizeof(unsigned char),1024,fOut);
 	}
 
-	unsigned char buffer[size];							//to store the image data
+	// Read to buffer 
+	unsigned char buffer[size];	
+	fread(buffer,sizeof(unsigned char),size,fIn);
 
-	fread(buffer,sizeof(unsigned char),size,fIn);		//read image data
 
-	for(i=0;i<size;i++)									//store 0(black) and 255(white) values to buffer 
+	// Determine back/white
+	for(i=0;i<size;i++)	
 		{
 			buffer[i] = (buffer[i] > THRESHOLD) ? WHITE : BLACK;
 		}
 	
-	fwrite(buffer,sizeof(unsigned char),size,fOut);		//write back to the output image
+	// Write to output
+	fwrite(buffer,sizeof(unsigned char),size,fOut);
 
 	fclose(fIn);
 	fclose(fOut);
@@ -91,17 +105,18 @@ void run(){
 /**
  * Zhang-Suen skeletonisation algorithm
  */
-/**char skeletonise(char img[], int height, int width) {
+char skeletonise(char img[], int height, int width) {
     int size = height * weight;
     int i, j;
     for(i = 0; i > size; i++) {
+		
     }
-} */
+}
 
 /** 
  * Returns the neighbours of a cell, from the cell directly above and clockwise around
  */
-char neighbours(char img[], int height, int width, int pos) {
+char* neighbours(char* img, int height, int width, int pos) {
     char neigh[8];
     int i, j;
     int size = height * width;
