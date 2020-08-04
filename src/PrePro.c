@@ -4,21 +4,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "BmpReader.c"
+#define THRESHOLD 128
+#define WHITE 255
+#define BLACK 0
 
-char blankPixel,imagePixel;
-char** image;
-
-/** 
- * Main preprocessing function
- */
-void run(char* fileName) {
-
-	// Load in image
-	BITMAPINFOHEADER bitmapInfoHeader;
-	unsigned char *bitmapData;
-	bitmapData = LoadBitmapFile(fileName,&bitmapInfoHeader);
-}
 
 /**
  * A function to relate the neighbour positions
@@ -46,90 +35,57 @@ int findpos (int t[]) {
 	}
 }
 
-/** 
-* Function to straighten an image
-*/
-void straighten(char* path) {
 
-    unsigned char byte[54];
-    int i;
-	FILE *fIn;
-	FILE *fOut;
-	unsigned char *buffer;
-	unsigned char *out;
-	
+void run(){
 
-    // Input file
-    fIn = fopen(path ,"rb");
-    // Output file				            
-	fOut = fopen("out.bmp","w+");                         
+	FILE *fIn = fopen("../data/sample.bmp","r");				//Input File name
+	FILE *fOut = fopen("b_w.bmp","w+");		            //Output File name
 
-    // Check if the input file has not been opened succesfully
-    if(fIn==NULL)												
-	{											
-		printf("File does not exist \n");
-	}	
+	int i;
+	unsigned char byte[54];								//to get the image header
+	unsigned char colorTable[1024];						//to get the colortable
 
-    // 	Copy over the file header
-    for(i=0;i<54;i++)										    
-	{									
-		byte[i] = getc(fIn);								
+	if(fIn==NULL)										// check if the input file has not been opened succesfully.
+	{										
+		printf("File does not exist.\n");
 	}
-	fwrite(byte,sizeof(unsigned char),54,fOut);	
 
-    // extract image height, width and bitDepth from the header 
+	for(i=0;i<54;i++)									//read the 54 byte header from fIn
+	{									
+		byte[i]=getc(fIn);								
+	}
+
+	fwrite(byte,sizeof(unsigned char),54,fOut);			//write the header back
+
+	// extract image height, width and bitDepth from imageHeader 
 	int height = *(int*)&byte[18];
 	int width = *(int*)&byte[22];
 	int bitDepth = *(int*)&byte[28];
 
-    // Find size of image and fill a buffer with the image
-    int size = height*width;
-buffer = (unsigned char*)malloc(size);	
-    fread(buffer,sizeof(unsigned char) ,size,fIn);
+	printf("width: %d\n",width);
+	printf("height: %d\n",height );
 
-    // Copy to out buffer
-    for(i=0;i<size;i++)
+	int size=height*width;								//calculate image size
+
+	if(bitDepth<=8)										//if ColorTable present, extract it.
 	{
-		out[i] = buffer[i];
+		fread(colorTable,sizeof(unsigned char),1024,fIn);
+		fwrite(colorTable,sizeof(unsigned char),1024,fOut);
 	}
-    // ALGORITHM HERE 
 
-    //write image data back to the file
-    fwrite(out,sizeof(unsigned char),size,fOut);
+	unsigned char buffer[size];							//to store the image data
+
+	fread(buffer,sizeof(unsigned char),size,fIn);		//read image data
+
+	for(i=0;i<size;i++)									//store 0(black) and 255(white) values to buffer 
+		{
+			buffer[i] = (buffer[i] > THRESHOLD) ? WHITE : BLACK;
+		}
+	
+	fwrite(buffer,sizeof(unsigned char),size,fOut);		//write back to the output image
 
 	fclose(fIn);
 	fclose(fOut);
-}
-
-/** 
- * Zhang-Suen skeletonisation algorithm
- */
-void skeleton(char* path) {
-	
-    // Declare variables
-    int i,j,count,rows,cols,processed;
- 
-	//pixel* markers;
-
-    // Import file
-    FILE* in = fopen(path,"r");
-	fscanf(in,"%d%d",&rows,&cols);
-	fscanf(in,"%d%d",&blankPixel,&imagePixel);
- 
-	blankPixel<=9?blankPixel+='0':blankPixel;
-	imagePixel<=9?imagePixel+='0':imagePixel;
- 
-	printf("\nPrinting original image :\n");
- 
-	image = (char**)malloc(rows*sizeof(char*));
- 
-	for(i=0;i<rows;i++){
-		image[i] = (char*)malloc((cols+1)*sizeof(char));
-		fscanf(in,"%s\n",image[i]);
-		printf("\n%s",image[i]);
- 
-	}
- 
 }
 
 /**
