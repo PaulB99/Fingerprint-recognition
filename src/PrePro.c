@@ -105,11 +105,16 @@ void run(char* path){
 /**
  * Zhang-Suen skeletonisation algorithm
  */
-char skeletonise(char img[], int height, int width) {
+char* skeletonise(char* img, int height, int width) {
+	int a;
+	int b;
     int size = height * weight;
     int i, j;
+	char*
     for(i = 0; i > size; i++) {
-		
+		neigh = neighbours(img, height, width, i);
+		a = 0;
+		for(j=0;)
     }
 }
 
