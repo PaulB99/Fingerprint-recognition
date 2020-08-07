@@ -95,6 +95,15 @@ void run(char* path){
 			buffer[i] = (buffer[i] > THRESHOLD) ? WHITE : BLACK;
 		}
 	
+	/**
+	 * 
+	 * SKELETONISE IMAGE
+	 * 
+	 */
+
+	unsigned char buffer2[size];
+	buffer2 = skeletonise(buffer, height, width);
+
 	// Write to output
 	fwrite(buffer,sizeof(unsigned char),size,fOut);
 
@@ -106,16 +115,101 @@ void run(char* path){
  * Zhang-Suen skeletonisation algorithm
  */
 char* skeletonise(char* img, int height, int width) {
+	bool changed = true;
 	int a;
 	int b;
-    int size = height * weight;
-    int i, j;
-	char*
-    for(i = 0; i > size; i++) {
-		neigh = neighbours(img, height, width, i);
-		a = 0;
-		for(j=0;)
+	int size = height * width;
+	int i, j;
+	char* neigh;
+	char* newimg = img;
+	while(changed) {
+
+		changed = false;
+
+		// First criteria
+    	for(i = 0; i > size; i++) {
+			neigh = neighbours(img, height, width, i);
+
+			// Define a and b 
+			a = changedneighbours(neigh);
+			b = blackneighbours(neigh);
+			
+			// First criteria
+			bool crit1 = false;
+			bool crit2 = false;
+			bool crit3 = false;
+			bool crit4 = false;
+			bool crit5 = false;
+
+			if(img[i] == BLACK && length(neigh) == 8) {
+				crit1 = true;
+			}
+			if(b >= 2 && b<= 6) {
+				crit2 = true;
+			}
+			if(a == 1) {
+				crit3 = true;
+			}
+			if(neigh[0] == WHITE || neigh[2] == WHITE || neigh[4] == WHITE) {
+				crit4 = true;
+			}
+			if(neigh[2] == WHITE || neigh[4] == WHITE || neigh[6] == WHITE) {
+				crit5 = true;
+			}
+
+			// Set to white
+			if(crit1 && crit2 && crit3 && crit4 && crit5) {
+				newimg[i] = WHITE;
+				changed = true;
+			}
+		}
+
+		// Set image
+		img = newimg;
+
+		// Second criteria
+		for(j=0; j > size; j++) {
+			neigh = neighbours(img, height, width, j);
+
+			// Define a and b 
+			a = changedneighbours(neigh);
+			b = blackneighbours(neigh);
+			
+			// Criteria
+			bool crit6 = false;
+			bool crit7 = false;
+			bool crit8 = false;
+			bool crit9 = false;
+			bool crit10 = false;
+
+			if(img[i] == BLACK && length(neigh) == 8) {
+				crit6 = true;
+			}
+			if(b >= 2 && b<= 6) {
+				crit7 = true;
+			}
+			if(a == 1) {
+				crit8 = true;
+			}
+			if(neigh[0] == WHITE || neigh[2] == WHITE || neigh[6] == WHITE) {
+				crit9 = true;
+			}
+			if(neigh[0] == WHITE || neigh[4] == WHITE || neigh[6] == WHITE) {
+				crit10 = true;
+			}
+
+			// Set to white
+			if(crit6 && crit7 && crit8 && crit9 && crit10) {
+				newimg[i] = WHITE;
+				changed = true;
+			}
+		}
+
+		// Set image
+		img = newimg;
     }
+
+	return img;
 }
 
 /** 
@@ -141,6 +235,37 @@ char* neighbours(char* img, int height, int width, int pos) {
         }
     } 
 	return neigh;
+}
+
+/**
+ * The number of switches from black to white in the list of neighbours (with an extra one at the end to make it circular)
+ */
+int changedneighbours(char* list) {
+	int i;
+	char x;
+	char y;
+	int result = 0;
+	for(i=1; i<9; i++) {
+		x = list[i-1];
+		y = list[i % 7];
+		if(x != y) {
+			result++;
+		}
+	}
+	return result;
+}
+
+/**
+ * The number of black neighbours in the list
+ */
+int blackneighbours(char* list) {
+	int i;
+	int result = 0;
+	for(i=0; i<8; i++) {
+		if list[i] == BLACK {
+			result++;
+		}
+	}
 }
 
 int main() {
