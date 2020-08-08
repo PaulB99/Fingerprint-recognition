@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #define THRESHOLD 128
 #define WHITE 255
 #define BLACK 0
@@ -35,80 +36,60 @@ int findpos (int t[]) {
 	}
 }
 
+/** 
+ * Returns the neighbours of a cell, from the cell directly above and clockwise around
+ */
+char* neighbours(char* img, int height, int width, int pos) {
+    char neigh[8];
+    int i, j;
+    int size = height * width;
+    for (i = -1; i <= 1; i++) {
+        for (j = -1; j <= 1; j++) {
+	        int arr[] = {i, j};
+            if (i == 0 && j == 0) { // Skip central case
+                continue;
+            }
+            else if(pos-i<0 || pos+i>size-1 || pos+(j*width)>size-1 || pos-(j*width)<0) {
+                neigh[findpos(arr)] = NULL;
+            }
+            else {
+                neigh[findpos(arr)] = pos + i + (j*width);
+            }
 
-void run(char* path){
+        }
+    } 
+	return neigh;
+}
 
-	// Input and output files
-	FILE *fIn = fopen(path,"r");
-	FILE *fOut = fopen("out.bmp","w+");		       
-
+/**
+ * The number of switches from black to white in the list of neighbours (with an extra one at the end to make it circular)
+ */
+int changedneighbours(char* list) {
 	int i;
-	unsigned char byte[54];								
-	unsigned char colourTable[1024];					
-
-	//Check file has been opened
-	if(fIn==NULL)	
-	{										
-		printf("File does not exist\n");
-	}
-
-	//Read header
-	for(i=0;i<54;i++)								
-	{									
-		byte[i]=getc(fIn);								
-	}
-
-	// Write header
-	fwrite(byte,sizeof(unsigned char),54,fOut);	
-
-	// Extract image height, width and bitDepth from imageHeader 
-	int height = *(int*)&byte[18];
-	int width = *(int*)&byte[22];
-	int bitDepth = *(int*)&byte[28];
-
-	printf("width: %d\n",width);
-	printf("height: %d\n",height );
-
-	int size=height*width;							
-
-	/** 
-	 * 
-	 * BINARISE IMAGE
-	 * Uses THRESHOLD to determine black/white
-	 * 
-	 */
-	// Extract colour table
-	if(bitDepth<=8)										
-	{
-		fread(colourTable,sizeof(unsigned char),1024,fIn);
-		fwrite(colourTable,sizeof(unsigned char),1024,fOut);
-	}
-
-	// Read to buffer 
-	unsigned char buffer[size];	
-	fread(buffer,sizeof(unsigned char),size,fIn);
-
-
-	// Determine back/white
-	for(i=0;i<size;i++)	
-		{
-			buffer[i] = (buffer[i] > THRESHOLD) ? WHITE : BLACK;
+	char x;
+	char y;
+	int result = 0;
+	for(i=1; i<9; i++) {
+		x = list[i-1];
+		y = list[i % 7];
+		if(x != y) {
+			result++;
 		}
-	
-	/**
-	 * 
-	 * SKELETONISE IMAGE
-	 * 
-	 */
+	}
+	return result;
+}
 
-	unsigned char buffer2[size];
-	buffer2 = skeletonise(buffer, height, width);
-
-	// Write to output
-	fwrite(buffer,sizeof(unsigned char),size,fOut);
-
-	fclose(fIn);
-	fclose(fOut);
+/**
+ * The number of black neighbours in the list
+ */
+int blackneighbours(char* list) {
+	int i;
+	int result = 0;
+	for(i=0; i<8; i++) {
+		if list[i] == BLACK {
+			result++;
+		}
+	}
 }
 
 /**
@@ -212,60 +193,80 @@ char* skeletonise(char* img, int height, int width) {
 	return img;
 }
 
-/** 
- * Returns the neighbours of a cell, from the cell directly above and clockwise around
- */
-char* neighbours(char* img, int height, int width, int pos) {
-    char neigh[8];
-    int i, j;
-    int size = height * width;
-    for (i = -1; i <= 1; i++) {
-        for (j = -1; j <= 1; j++) {
-	        int arr[] = {i, j};
-            if (i == 0 && j == 0) { // Skip central case
-                continue;
-            }
-            else if(pos-i<0 || pos+i>size-1 || pos+(j*width)>size-1 || pos-(j*width)<0) {
-                neigh[findpos(arr)] = NULL;
-            }
-            else {
-                neigh[findpos(arr)] = pos + i + (j*width);
-            }
 
-        }
-    } 
-	return neigh;
-}
+void run(char* path){
 
-/**
- * The number of switches from black to white in the list of neighbours (with an extra one at the end to make it circular)
- */
-int changedneighbours(char* list) {
+	// Input and output files
+	FILE *fIn = fopen(path,"r");
+	FILE *fOut = fopen("out.bmp","w+");		       
+
 	int i;
-	char x;
-	char y;
-	int result = 0;
-	for(i=1; i<9; i++) {
-		x = list[i-1];
-		y = list[i % 7];
-		if(x != y) {
-			result++;
-		}
-	}
-	return result;
-}
+	unsigned char byte[54];								
+	unsigned char colourTable[1024];					
 
-/**
- * The number of black neighbours in the list
- */
-int blackneighbours(char* list) {
-	int i;
-	int result = 0;
-	for(i=0; i<8; i++) {
-		if list[i] == BLACK {
-			result++;
-		}
+	//Check file has been opened
+	if(fIn==NULL)	
+	{										
+		printf("File does not exist\n");
 	}
+
+	//Read header
+	for(i=0;i<54;i++)								
+	{									
+		byte[i]=getc(fIn);								
+	}
+
+	// Write header
+	fwrite(byte,sizeof(unsigned char),54,fOut);	
+
+	// Extract image height, width and bitDepth from imageHeader 
+	int height = *(int*)&byte[18];
+	int width = *(int*)&byte[22];
+	int bitDepth = *(int*)&byte[28];
+
+	printf("width: %d\n",width);
+	printf("height: %d\n",height );
+
+	int size=height*width;							
+
+	/** 
+	 * 
+	 * BINARISE IMAGE
+	 * Uses THRESHOLD to determine black/white
+	 * 
+	 */
+	// Extract colour table
+	if(bitDepth<=8)										
+	{
+		fread(colourTable,sizeof(unsigned char),1024,fIn);
+		fwrite(colourTable,sizeof(unsigned char),1024,fOut);
+	}
+
+	// Read to buffer 
+	unsigned char buffer[size];	
+	fread(buffer,sizeof(unsigned char),size,fIn);
+
+
+	// Determine back/white
+	for(i=0;i<size;i++)	
+		{
+			buffer[i] = (buffer[i] > THRESHOLD) ? WHITE : BLACK;
+		}
+	
+	/**
+	 * 
+	 * SKELETONISE IMAGE
+	 * 
+	 */
+
+	unsigned char* buffer2;
+	buffer2 = skeletonise(buffer, height, width);
+
+	// Write to output
+	fwrite(buffer,sizeof(unsigned char),size,fOut);
+
+	fclose(fIn);
+	fclose(fOut);
 }
 
 int main() {
