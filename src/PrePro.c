@@ -40,24 +40,29 @@ int findpos (int t[]) {
  * Returns the neighbours of a cell, from the cell directly above and clockwise around
  */
 char* neighbours(char* img, int height, int width, int pos) {
-    char neigh[8];
-    int i, j;
+    char neigh[9];
+    int i, j, l;
     int size = height * width;
+	l = 0;
     for (i = -1; i <= 1; i++) {
         for (j = -1; j <= 1; j++) {
 	        int arr[] = {i, j};
             if (i == 0 && j == 0) { // Skip central case
                 continue;
             }
+			// If out of bounds
             else if(pos-i<0 || pos+i>size-1 || pos+(j*width)>size-1 || pos-(j*width)<0) {
-                neigh[findpos(arr)] = NULL;
+                neigh[findpos(arr)+1] = NULL;
             }
             else {
-                neigh[findpos(arr)] = pos + i + (j*width);
+                neigh[findpos(arr)+1] = pos + i + (j*width);
+				l++;
             }
 
         }
-    } 
+    }
+	// The first element shows the number of neighbours
+	neigh[0] = l
 	return neigh;
 }
 
@@ -70,8 +75,8 @@ int changedneighbours(char* list) {
 	char y;
 	int result = 0;
 	for(i=1; i<9; i++) {
-		x = list[i-1];
-		y = list[i % 7];
+		x = list[i];
+		y = list[(i % 7)+1]; // Needs +1 as first element is length
 		if(x != y) {
 			result++;
 		}
@@ -86,7 +91,7 @@ int blackneighbours(char* list) {
 	int i;
 	int result = 0;
 	for(i=0; i<8; i++) {
-		if list[i] == BLACK {
+		if(list[i+1] == BLACK) { // Need an indent because first element is length
 			result++;
 		}
 	}
@@ -122,7 +127,7 @@ char* skeletonise(char* img, int height, int width) {
 			bool crit4 = false;
 			bool crit5 = false;
 
-			if(img[i] == BLACK && length(neigh) == 8) {
+			if(img[i] == BLACK && neigh[0] == 8) {
 				crit1 = true;
 			}
 			if(b >= 2 && b<= 6) {
@@ -131,10 +136,10 @@ char* skeletonise(char* img, int height, int width) {
 			if(a == 1) {
 				crit3 = true;
 			}
-			if(neigh[0] == WHITE || neigh[2] == WHITE || neigh[4] == WHITE) {
+			if(neigh[1] == WHITE || neigh[3] == WHITE || neigh[5] == WHITE) {
 				crit4 = true;
 			}
-			if(neigh[2] == WHITE || neigh[4] == WHITE || neigh[6] == WHITE) {
+			if(neigh[3] == WHITE || neigh[5] == WHITE || neigh[7] == WHITE) {
 				crit5 = true;
 			}
 
@@ -163,7 +168,7 @@ char* skeletonise(char* img, int height, int width) {
 			bool crit9 = false;
 			bool crit10 = false;
 
-			if(img[i] == BLACK && length(neigh) == 8) {
+			if(img[i] == BLACK && neigh[0] == 8) {
 				crit6 = true;
 			}
 			if(b >= 2 && b<= 6) {
@@ -172,10 +177,10 @@ char* skeletonise(char* img, int height, int width) {
 			if(a == 1) {
 				crit8 = true;
 			}
-			if(neigh[0] == WHITE || neigh[2] == WHITE || neigh[6] == WHITE) {
+			if(neigh[1] == WHITE || neigh[3] == WHITE || neigh[7] == WHITE) {
 				crit9 = true;
 			}
-			if(neigh[0] == WHITE || neigh[4] == WHITE || neigh[6] == WHITE) {
+			if(neigh[1] == WHITE || neigh[5] == WHITE || neigh[7] == WHITE) {
 				crit10 = true;
 			}
 
