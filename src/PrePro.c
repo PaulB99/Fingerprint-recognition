@@ -111,7 +111,7 @@ char* skeletonise(char* img, int height, int width) {
 	while(changed) {
 
 		changed = false;
-
+		printf("Run\n");
 		// First criteria
     	for(i = 0; i > size; i++) {
 			neigh = neighbours(img, height, width, i);
@@ -147,6 +147,7 @@ char* skeletonise(char* img, int height, int width) {
 			if(crit1 && crit2 && crit3 && crit4 && crit5) {
 				newimg[i] = WHITE;
 				changed = true;
+				printf("Change1\n");
 			}
 		}
 
@@ -188,6 +189,7 @@ char* skeletonise(char* img, int height, int width) {
 			if(crit6 && crit7 && crit8 && crit9 && crit10) {
 				newimg[i] = WHITE;
 				changed = true;
+				printf("Change2\n");
 			}
 		}
 
