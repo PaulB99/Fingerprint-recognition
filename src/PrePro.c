@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#define THRESHOLD 128
+#define THRESHOLD 100
 #define WHITE 255
 #define BLACK 0
 
@@ -62,7 +62,7 @@ char* neighbours(char* img, int height, int width, int pos) {
         }
     }
 	// The first element shows the number of neighbours
-	neigh[0] = l
+	neigh[0] = l;
 	return neigh;
 }
 
@@ -268,7 +268,7 @@ void run(char* path){
 	buffer2 = skeletonise(buffer, height, width);
 
 	// Write to output
-	fwrite(buffer,sizeof(unsigned char),size,fOut);
+	fwrite(buffer2,sizeof(unsigned char),size,fOut);
 
 	fclose(fIn);
 	fclose(fOut);
