@@ -40,7 +40,7 @@ int findpos (int t[]) {
  * Returns the neighbours of a cell, from the cell directly above and clockwise around
  */
 char* neighbours(char* img, int height, int width, int pos) {
-    char neigh[9];
+    static char neigh[9];
     int i, j, l;
     int size = height * width;
 	l = 0;
@@ -52,10 +52,10 @@ char* neighbours(char* img, int height, int width, int pos) {
             }
 			// If out of bounds
             else if(pos-i<0 || pos+i>size-1 || pos+(j*width)>size-1 || pos-(j*width)<0) {
-                neigh[findpos(arr)+1] = NULL;
+                neigh[findpos(arr)] = NULL;
             }
             else {
-                neigh[findpos(arr)+1] = pos + i + (j*width);
+                neigh[findpos(arr)] = pos + i + (j*width);
 				l++;
             }
 
@@ -69,14 +69,18 @@ char* neighbours(char* img, int height, int width, int pos) {
 /**
  * The number of switches from black to white in the list of neighbours (with an extra one at the end to make it circular)
  */
-int changedneighbours(char* list) {
-	int i;
+int changedneighbours(char list[]) {
+	int i,j;
 	char x;
 	char y;
 	int result = 0;
 	for(i=1; i<9; i++) {
+		j = i+1;
+		if(j > 8) {  // Make sure we don't overflow
+			j = 1;
+		}
 		x = list[i];
-		y = list[(i % 7)+1]; // Needs +1 as first element is length
+		y = list[j]; // Needs +1 as first element is length
 		if(x != y) {
 			result++;
 		}
@@ -87,7 +91,7 @@ int changedneighbours(char* list) {
 /**
  * The number of black neighbours in the list
  */
-int blackneighbours(char* list) {
+int blackneighbours(char list[]) {
 	int i;
 	int result = 0;
 	for(i=0; i<8; i++) {
@@ -111,11 +115,9 @@ char* skeletonise(char* img, int height, int width) {
 	while(changed) {
 
 		changed = false;
-		printf("Run\n");
 		// First criteria
-    	for(i = 0; i > size; i++) {
+    	for(i = 0; i < size; i++) {
 			neigh = neighbours(img, height, width, i);
-
 			// Define a and b 
 			a = changedneighbours(neigh);
 			b = blackneighbours(neigh);
@@ -171,18 +173,23 @@ char* skeletonise(char* img, int height, int width) {
 
 			if(img[i] == BLACK && neigh[0] == 8) {
 				crit6 = true;
+printf("6\n");
 			}
 			if(b >= 2 && b<= 6) {
 				crit7 = true;
+printf("7\n");
 			}
 			if(a == 1) {
 				crit8 = true;
+printf("8\n");
 			}
 			if(neigh[1] == WHITE || neigh[3] == WHITE || neigh[7] == WHITE) {
 				crit9 = true;
+printf("9\n");
 			}
 			if(neigh[1] == WHITE || neigh[5] == WHITE || neigh[7] == WHITE) {
 				crit10 = true;
+printf("10\n");
 			}
 
 			// Set to white
